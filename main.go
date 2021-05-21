@@ -2,13 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type Article struct {
+	// ID  string `json:"ID"`
 	Title  string `json:"Title"`
 	Author string `json:"Author"`
 	Link   string `json:"Link"`
@@ -21,8 +23,6 @@ type Home struct {
 }
 
 func homePage(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Endpoint home page")
-
 	now := Home{
 		Now: time.Now().String(),
 	}
@@ -49,15 +49,16 @@ func getArticles(response http.ResponseWriter, request *http.Request) {
 		},
 	}
 
-	fmt.Println("Endpoint get articles")
 	json.NewEncoder(response).Encode(Articles)
 }
 
 func handleRequests() {
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/articles", getArticles)
+	router := mux.NewRouter().StrictSlash(true)
 
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	router.HandleFunc("/", homePage)
+	router.HandleFunc("/articles", getArticles)
+
+	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
 func main() {
