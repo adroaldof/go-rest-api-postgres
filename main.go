@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -43,13 +44,25 @@ func getArticle(response http.ResponseWriter, request *http.Request) {
 			json.NewEncoder(response).Encode(article)
 		}
 	}
+}
 
+func createArticle(response http.ResponseWriter, request *http.Request) {
+	body, _ := ioutil.ReadAll(request.Body)
+
+	var article Article
+
+	json.Unmarshal(body, &article)
+
+	Articles = append(Articles, article)
+
+	json.NewEncoder(response).Encode(article)
 }
 
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", homePage)
+	router.HandleFunc("/articles", createArticle).Methods("POST")
 	router.HandleFunc("/articles", getArticles)
 	router.HandleFunc("/articles/{id}", getArticle)
 
