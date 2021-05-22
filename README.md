@@ -9,7 +9,7 @@ go mod init <repository>/<module>
 ## Run the application
 
 ```bash
-go run main.go
+go run *.go
 ```
 
 ## Install a package
