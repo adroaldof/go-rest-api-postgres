@@ -1,107 +1,39 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
-
-type Article struct {
-	ID     string `json:"ID"`
-	Title  string `json:"Title"`
-	Author string `json:"Author"`
-	Link   string `json:"Link"`
-}
-
-var Articles []Article
-
-type Home struct {
-	Now string `json:"Now"`
-}
-
-func homePage(response http.ResponseWriter, request *http.Request) {
-	now := Home{
-		Now: time.Now().String(),
-	}
-
-	json.NewEncoder(response).Encode(now)
-}
-
-func getArticles(response http.ResponseWriter, request *http.Request) {
-	json.NewEncoder(response).Encode(Articles)
-}
-
-func getArticle(response http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	id := vars["id"]
-
-	for _, article := range Articles {
-		if article.ID == id {
-			json.NewEncoder(response).Encode(article)
-		}
-	}
-}
-
-func createArticle(response http.ResponseWriter, request *http.Request) {
-	body, _ := ioutil.ReadAll(request.Body)
-
-	var article Article
-
-	json.Unmarshal(body, &article)
-
-	Articles = append(Articles, article)
-
-	json.NewEncoder(response).Encode(article)
-}
-
-func deleteArticle(response http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	id := vars["id"]
-
-	for index, article := range Articles {
-		if article.ID == id {
-			Articles = append(Articles[:index], Articles[index+1:]...)
-		}
-	}
-}
 
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/", homePage)
-	router.HandleFunc("/articles", createArticle).Methods("POST")
-	router.HandleFunc("/articles", getArticles)
-	router.HandleFunc("/articles/{id}", deleteArticle).Methods("DELETE")
-	router.HandleFunc("/articles/{id}", getArticle)
+	router.HandleFunc("/", HomePage).Methods("GET")
+	router.HandleFunc("/articles", CreateArticle).Methods("POST")
+	router.HandleFunc("/articles", GetArticles).Methods("GET")
+	router.HandleFunc("/articles/{id}", DeleteArticle).Methods("DELETE")
+	router.HandleFunc("/articles/{id}", GetArticle).Methods("GET")
+	router.HandleFunc("/articles/{id}", PatchArticle).Methods("PATCH")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
+func makeMigrations(db *gorm.DB) {
+	db.AutoMigrate(&Article{})
+}
+
+func runSeeds(db *gorm.DB) {
+	SeedArticles(db)
+}
+
 func main() {
-	Articles = []Article{
-		{
-			ID:     "1",
-			Title:  "Python Intermediate and Advanced 101",
-			Author: "Arkaprabha Majumdar",
-			Link:   "https://www.amazon.com/dp/B089KVK23P",
-		},
-		{
-			ID:     "2",
-			Title:  "R programming Advanced",
-			Author: "Arkaprabha Majumdar",
-			Link:   "https://www.amazon.com/dp/B089WH12CR",
-		},
-		{
-			ID:     "3",
-			Title:  "R programming Fundamentals",
-			Author: "Arkaprabha Majumdar",
-			Link:   "https://www.amazon.com/dp/B089S58WWG",
-		},
-	}
+	db := Database()
+
+	makeMigrations(db)
+	runSeeds(db)
 
 	handleRequests()
 }
