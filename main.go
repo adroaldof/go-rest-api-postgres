@@ -58,12 +58,24 @@ func createArticle(response http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(response).Encode(article)
 }
 
+func deleteArticle(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	id := vars["id"]
+
+	for index, article := range Articles {
+		if article.ID == id {
+			Articles = append(Articles[:index], Articles[index+1:]...)
+		}
+	}
+}
+
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", homePage)
 	router.HandleFunc("/articles", createArticle).Methods("POST")
 	router.HandleFunc("/articles", getArticles)
+	router.HandleFunc("/articles/{id}", deleteArticle).Methods("DELETE")
 	router.HandleFunc("/articles/{id}", getArticle)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
