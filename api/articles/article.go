@@ -12,10 +12,10 @@ import (
 )
 
 type Article struct {
-	ID     string `json:"ID"`
-	Title  string `json:"Title"`
-	Author string `json:"Author"`
-	Link   string `json:"Link"`
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	Link   string `json:"link"`
 }
 
 var Articles []Article
