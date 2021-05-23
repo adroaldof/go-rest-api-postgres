@@ -1,4 +1,4 @@
-package main
+package articles
 
 import (
 	"encoding/json"
@@ -7,6 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
+
+	"github.com/adroaldof/go-rest-api-postgres/database"
 )
 
 type Article struct {
@@ -21,7 +23,7 @@ var Articles []Article
 func GetArticles(response http.ResponseWriter, request *http.Request) {
 	var articles []Article
 
-	db := GetDBInstance()
+	db := database.GetDBInstance()
 	db.Find(&articles)
 
 	json.NewEncoder(response).Encode(articles)
@@ -33,7 +35,7 @@ func GetArticle(response http.ResponseWriter, request *http.Request) {
 
 	var article Article
 
-	db := GetDBInstance()
+	db := database.GetDBInstance()
 	db.Find(&article, id)
 
 	json.NewEncoder(response).Encode(article)
@@ -46,7 +48,7 @@ func CreateArticle(response http.ResponseWriter, request *http.Request) {
 
 	json.Unmarshal(body, &article)
 
-	db := GetDBInstance()
+	db := database.GetDBInstance()
 	db.Create(article)
 
 	json.NewEncoder(response).Encode(article)
@@ -63,7 +65,7 @@ func PatchArticle(response http.ResponseWriter, request *http.Request) {
 
 	var article Article
 
-	db := GetDBInstance()
+	db := database.GetDBInstance()
 	db.Find(&article, id)
 
 	article.Title = payload.Title
@@ -81,7 +83,7 @@ func DeleteArticle(response http.ResponseWriter, request *http.Request) {
 
 	var article Article
 
-	db := GetDBInstance()
+	db := database.GetDBInstance()
 	db.Find(&article, id)
 	db.Delete(&article)
 

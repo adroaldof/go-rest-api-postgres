@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"fmt"
@@ -6,17 +6,19 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/adroaldof/go-rest-api-postgres/handlers"
 )
 
 func getPostgresConnectionString() string {
 	databaseUrlPattern := "host=%s port=%s user=%s dbname=%s password=%s sslmode=disable"
 
 	databaseUrl := fmt.Sprintf(databaseUrlPattern,
-		GetEnvironmentVariable("POSTGRES_HOST", "0.0.0.0"),
-		GetEnvironmentVariable("POSTGRES_PORT", "5432"),
-		GetEnvironmentVariable("POSTGRES_USER", "user"),
-		GetEnvironmentVariable("POSTGRES_NAME", "go_api_db"),
-		GetEnvironmentVariable("POSTGRES_PASSWORD", "password"))
+		handlers.GetEnvironmentVariable("POSTGRES_HOST", "0.0.0.0"),
+		handlers.GetEnvironmentVariable("POSTGRES_PORT", "5432"),
+		handlers.GetEnvironmentVariable("POSTGRES_USER", "user"),
+		handlers.GetEnvironmentVariable("POSTGRES_NAME", "go_api_db"),
+		handlers.GetEnvironmentVariable("POSTGRES_PASSWORD", "password"))
 
 	return databaseUrl
 }
