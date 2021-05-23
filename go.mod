@@ -1,4 +1,4 @@
-module inlabs.tech/go-api-postgres
+module github.com/adroaldof/go-rest-api-postgres
 
 go 1.16
 
