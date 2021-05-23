@@ -30,7 +30,7 @@ func runSeeds(db *gorm.DB) {
 }
 
 func main() {
-	db := Database()
+	db := GetDBInstance()
 
 	makeMigrations(db)
 	runSeeds(db)

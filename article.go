@@ -21,7 +21,7 @@ var Articles []Article
 func GetArticles(response http.ResponseWriter, request *http.Request) {
 	var articles []Article
 
-	db := Database()
+	db := GetDBInstance()
 	db.Find(&articles)
 
 	json.NewEncoder(response).Encode(articles)
@@ -33,7 +33,7 @@ func GetArticle(response http.ResponseWriter, request *http.Request) {
 
 	var article Article
 
-	db := Database()
+	db := GetDBInstance()
 	db.Find(&article, id)
 
 	json.NewEncoder(response).Encode(article)
@@ -46,7 +46,7 @@ func CreateArticle(response http.ResponseWriter, request *http.Request) {
 
 	json.Unmarshal(body, &article)
 
-	db := Database()
+	db := GetDBInstance()
 	db.Create(article)
 
 	json.NewEncoder(response).Encode(article)
@@ -63,7 +63,7 @@ func PatchArticle(response http.ResponseWriter, request *http.Request) {
 
 	var article Article
 
-	db := Database()
+	db := GetDBInstance()
 	db.Find(&article, id)
 
 	article.Title = payload.Title
@@ -81,7 +81,7 @@ func DeleteArticle(response http.ResponseWriter, request *http.Request) {
 
 	var article Article
 
-	db := Database()
+	db := GetDBInstance()
 	db.Find(&article, id)
 	db.Delete(&article)
 
