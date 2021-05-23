@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  go-api:
+    image: postgres:12.5
+    ports:
+      - 5432:5432
+    volumes:
+      - go-api-data:/var/lib/postgresql/data
+    environment:
+      LOGGING_COLLECTOR: "on"
+      POSTGRES_DB: go_api_db
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+
+volumes:
+  go-api-data:
